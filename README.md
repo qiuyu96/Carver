@@ -7,7 +7,7 @@ facilitating algorithm development. Note that the discriminator is omitted for s
 
 > **Benchmarking and Analyzing 3D-aware Image Synthesis with a Modularized Codebase** <br>
 > Qiuyu Wang, Zifan Shi, Kecheng Zheng, Yinghao Xu, Sida Peng, Yujun Shen <br>
-> *arXiv: * <br>
+> *arXiv: 2306.12423* <br>
 
 ## Code Coming Soon
 
@@ -17,7 +17,7 @@ facilitating algorithm development. Note that the discriminator is omitted for s
 @article{wang2023benchmarking,
   title   = {Benchmarking and Analyzing 3D-aware Image Synthesis with a Modularized Codebase},
   author  = {Wang, Qiuyu and Shi, Zifan and Zheng, Kecheng and Xu, Yinghao and Peng, Sida and Shen, Yujun},
-  journal = {arXiv:},
+  journal = {arXiv:2306.12423},
   year    = {2023}
 }
 ```
