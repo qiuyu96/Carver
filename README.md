@@ -9,6 +9,8 @@ facilitating algorithm development. Note that the discriminator is omitted for s
 > Qiuyu Wang, Zifan Shi, Kecheng Zheng, Yinghao Xu, Sida Peng, Yujun Shen <br>
 > *arXiv: 2306.12423* <br>
 
+[[Paper](https://arxiv.org/abs/2306.12423)]
+
 ## Code Coming Soon
 
 ## BibTeX
