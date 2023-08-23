@@ -152,8 +152,8 @@ python -m torch.distributed.launch --nproc_per_node=1 test_3d_metrics.py --datas
 ```
 
 ## TODO
-- [] Upload pretrained checkpoints
-- [] User Guide
+- [ ] Upload pretrained checkpoints
+- [ ] User Guide
 
 ## Acknowledgement
 
