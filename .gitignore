@@ -42,7 +42,7 @@ results/
 resources/
 events/
 profile/
-*.txt
+# *.txt
 *.json
 *.log
 *.html
