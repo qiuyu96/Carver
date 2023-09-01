@@ -43,7 +43,7 @@ facilitating algorithm development. Note that the discriminator is omitted for s
 
 ## Installation
 
-Our code is tested with Python 3.8, CUDA 11.3 and PyTorch 1.11.0.
+Our code is tested with Python 3.8, CUDA 11.3, and PyTorch 1.11.0.
 
 1. Install package requirements via `conda`:
 
@@ -55,9 +55,9 @@ Our code is tested with Python 3.8, CUDA 11.3 and PyTorch 1.11.0.
     ```
 2. Our code requires [nvdiffrast](https://nvlabs.github.io/nvdiffrast), so please refer to the [documentation](https://nvlabs.github.io/nvdiffrast/#linux) for instructions on how to install it.
 
-3. Our code also depends on the [face reconstruction model](https://arxiv.org/abs/1903.08527) to evaluate metrics. Please refer to [this guide](https://github.com/sicxu/Deep3DFaceRecon_pytorch#prepare-prerequisite-models) to prepare prerequisite models.
+3. Our code also uses the [face reconstruction model](https://arxiv.org/abs/1903.08527) to evaluate metrics. Please refer to [this guide](https://github.com/sicxu/Deep3DFaceRecon_pytorch#prepare-prerequisite-models) to prepare prerequisite models.
 
-4. To use video visualizer (optional), please also install `ffmpeg`.
+4. To use a video visualizer (optional), please also install `ffmpeg`.
 
     - Ubuntu: `sudo apt-get install ffmpeg`.
     - MacOS: `brew install ffmpeg`.
@@ -75,7 +75,7 @@ Our code is tested with Python 3.8, CUDA 11.3 and PyTorch 1.11.0.
 
 **Cats**: Please refer to [this guide](https://github.com/microsoft/GRAM#data-preparation) to prepare the dataset.
 
-## Quick Demo
+## Quick demo
 
 ### Train [EG3D](https://nvlabs.github.io/eg3d/) on FFHQ in Resolution of 515x512
 
@@ -89,13 +89,13 @@ where
 
 - `<NUM_GPUS>` refers to the number of GPUs. Setting `<NUM_GPUS>` as 1 helps launch a training job on single-GPU platforms.
 
-- `<PATH_TO_DATA>` refers to the path of FFHQ dataset (in resolution of 256x256) with `zip` format. If running on local machines, a soft link of the data will be created under the `data` folder of the working directory to save disk space.
+- `<PATH_TO_DATA>` refers to the path of FFHQ dataset (in a resolution of 256x256) with `zip` format. If running on local machines, a soft link of the data will be created under the `data` folder of the working directory to save disk space.
 
 - `[OPTIONS]` refers to any additional option to pass. Detailed instructions on available options can be shown via `./scripts/training_demos/eg3d_ffhq512.sh <NUM_GPUS> <PATH_TO_DATA> --help`.
 
-This demo script uses `eg3d_ffhq512` as the default value of `job_name`, which is particularly used to identify experiments. Concretely, a directory with name `job_name` will be created under the root working directory (with is set as `work_dirs/` by default). To prevent overwriting previous experiments, an exception will be raised to interrupt the training if the `job_name` directory has already existed. To change the job name, please use `--job_name=<NEW_JOB_NAME>` option.
+This demo script uses `eg3d_ffhq512` as the default value of `job_name`, which is particularly used to identify experiments. Concretely, a directory with the name `job_name` will be created under the root working directory (which is set as `work_dirs/` by default). To prevent overwriting previous experiments, an exception will be raised to interrupt the training if the `job_name` directory has already existed. To change the job name, please use `--job_name=<NEW_JOB_NAME>` option.
 
-Other 3D GAN models reproduced by our codebase can be trained similarily, please refer to scripts under `./scripts/training_demos/` for more details.
+Other 3D GAN models reproduced by our codebase can be trained similarly, please refer to scripts under `./scripts/training_demos/` for more details.
 
 ### Ablation `point embedder` using our codebase.
 
@@ -119,7 +119,7 @@ To investigate the effect of various point embedders, one can utilize the follow
 ./scripts/training_demos/ablation3d.sh <NUM_GPUS> <PATH_TO_DATA> --job_name <YOUR_JOB_NAME> --root_work_dir <YOUR_ROOT_DIR> --ref_mode 'triplane' --fv_feat_res 64 --use_positional_encoding false --mlp_type 'eg3d' --mlp_depth 2 --mlp_hidden_dim 64 --mlp_output_dim 32 --r1_gamma 1.5
 ```
 
-## Inspect Training Results
+## Inspect training results
 
 Besides using TensorBoard to track the training process, the raw results (e.g., training losses and running time) are saved in [JSON Lines](https://jsonlines.org/) format. They can be easily inspected with the following script
 
@@ -144,7 +144,7 @@ After training a model, one can employ the following scripts to run inference an
 CUDA_VISIBLE_DEVICES=0 python test_3d_inference.py --model <PATH_TO_MODEL> --work_dir <PATH_TO_WORK_DIR> --save_image true --save_video false --save_shape true --shape_res 512 --num 10 --truncation_psi 0.7
 ```
 
-## Evaluate Metrics
+## Evaluate metrics
 After training a model, one can use the following scripts to evaluate various metrics, including FID, face identity consistency (ID), depth error (DE), pose error (PE) and reprojection error (RE).
 
 ```shell
