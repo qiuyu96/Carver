@@ -129,7 +129,8 @@ class Ablation3DGenerator(nn.Module):
         self.point_representer = PointRepresenter(
             representation_type=ref_mode,
             triplane_axes=triplane_axes,
-            coordinate_scale=coordinate_scale)
+            coordinate_scale=coordinate_scale,
+            return_eikonal=return_eikonal)
 
         mlp_input_dim = 0
         num_ws = 0

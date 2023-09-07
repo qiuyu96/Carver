@@ -31,7 +31,8 @@ class PointRepresenter(nn.Module):
                  triplane_axes=None,
                  mpi_levels=None,
                  coordinate_scale=None,
-                 bound=None):
+                 bound=None,
+                 return_eikonal=False):
         """Initializes hyper-parameters for getting point representations.
 
         NOTE:
@@ -55,6 +56,9 @@ class PointRepresenter(nn.Module):
                 Defaults to `None`.
             bound: Bound used to normalize coordinates, with shape [1, 2, 3].
                 Defaults to `None`.
+            return_eikonal: If the eikonal loss is to be used, we utilize the
+                function `grid_sample_customized()` instead of `F.grid_sample()`
+                to avoid errors in computing the second derivative.
 
         Note that only one of the above two parameters used for normalizing
         coordinates can be available.
@@ -68,6 +72,7 @@ class PointRepresenter(nn.Module):
             self.register_buffer('bound', bound)
         else:
             self.bound = None
+        self.return_eikonal = return_eikonal
 
         representation_type = representation_type.lower()
         if representation_type not in _REPRESENTATION_TYPES:
@@ -146,7 +151,8 @@ class PointRepresenter(nn.Module):
                 plane_axes=self.triplane_axes.to(points.device),
                 plane_features=ref_representation,
                 coordinates=normalized_points,
-                align_corners=align_corners)
+                align_corners=align_corners,
+                return_eikonal=self.return_eikonal)
         if self.representation_type == 'hybrid':
             assert (isinstance(ref_representation, list)
                         or isinstance(ref_representation, tuple))
@@ -156,7 +162,8 @@ class PointRepresenter(nn.Module):
                 plane_axes=self.triplane_axes.to(points.device),
                 plane_features=triplane,
                 coordinates=normalized_points,
-                align_corners=align_corners)
+                align_corners=align_corners,
+                return_eikonal=self.return_eikonal)
             point_features_volume = retrieve_from_volume(
                 coordinates=normalized_points,
                 volume=feature_volume)
@@ -313,6 +320,78 @@ def grid_sample_3d(volume, coordinates):
     return sampled_vals
 
 
+def grid_sample_customized(input, grid):
+    """Customized `grid_sample()` operation.
+
+    Since the original PyTorch `grid_sample()` operator does not support second
+    derivative computation during the backward pass, we customize this operator.
+
+    Args:
+        input: Input tensor.
+        grid: Flow-field.
+
+    Returns:
+        output: Output Tensor.
+    """
+    N, C, IH, IW = input.shape
+    _, H, W, _ = grid.shape
+
+    if torch.any(torch.isnan(grid)):
+        grid = torch.ones_like(grid)
+        print('nan')
+
+    ix = grid[..., 0]
+    iy = grid[..., 1]
+
+    ix = ((ix + 1) / 2) * (IW - 1)
+    iy = ((iy + 1) / 2) * (IH - 1)
+    with torch.no_grad():
+        ix_nw = torch.floor(ix)
+        iy_nw = torch.floor(iy)
+        ix_ne = ix_nw + 1
+        iy_ne = iy_nw
+        ix_sw = ix_nw
+        iy_sw = iy_nw + 1
+        ix_se = ix_nw + 1
+        iy_se = iy_nw + 1
+
+    nw = (ix_se - ix) * (iy_se - iy)
+    ne = (ix - ix_sw) * (iy_sw - iy)
+    sw = (ix_ne - ix) * (iy - iy_ne)
+    se = (ix - ix_nw) * (iy - iy_nw)
+
+    with torch.no_grad():
+        torch.clamp(ix_nw, 0, IW - 1, out=ix_nw)
+        torch.clamp(iy_nw, 0, IH - 1, out=iy_nw)
+
+        torch.clamp(ix_ne, 0, IW - 1, out=ix_ne)
+        torch.clamp(iy_ne, 0, IH - 1, out=iy_ne)
+
+        torch.clamp(ix_sw, 0, IW - 1, out=ix_sw)
+        torch.clamp(iy_sw, 0, IH - 1, out=iy_sw)
+
+        torch.clamp(ix_se, 0, IW - 1, out=ix_se)
+        torch.clamp(iy_se, 0, IH - 1, out=iy_se)
+
+    input = input.view(N, C, IH * IW)
+
+    nw_val = torch.gather(input, 2, (iy_nw * IW + ix_nw).long().view(
+        N, 1, H * W).repeat(1, C, 1))
+    ne_val = torch.gather(input, 2, (iy_ne * IW + ix_ne).long().view(
+        N, 1, H * W).repeat(1, C, 1))
+    sw_val = torch.gather(input, 2, (iy_sw * IW + ix_sw).long().view(
+        N, 1, H * W).repeat(1, C, 1))
+    se_val = torch.gather(input, 2, (iy_se * IW + ix_se).long().view(
+        N, 1, H * W).repeat(1, C, 1))
+
+    output = (nw_val.view(N, C, H, W) * nw.view(N, 1, H, W) +
+              ne_val.view(N, C, H, W) * ne.view(N, 1, H, W) +
+              sw_val.view(N, C, H, W) * sw.view(N, 1, H, W) +
+              se_val.view(N, C, H, W) * se.view(N, 1, H, W))
+
+    return output
+
+
 def retrieve_from_volume(coordinates, volume):
     """Samples point features from feature volume.
 
@@ -399,7 +478,8 @@ def retrieve_from_planes(plane_axes,
                          plane_features,
                          coordinates,
                          mode='bilinear',
-                         align_corners=False):
+                         align_corners=False,
+                         return_eikonal=False):
     """Samples point features from triplane. Borrowed from
 
     https://github.com/NVlabs/eg3d/blob/main/eg3d/training/volumetric_rendering/renderer.py
@@ -421,12 +501,17 @@ def retrieve_from_planes(plane_axes,
     projected_coordinates = project_points_onto_planes(
         coordinates,
         plane_axes).unsqueeze(1)  # [N * n_planes, 1, R * K, 2]
-    output_features = F.grid_sample(
-        plane_features,
-        projected_coordinates.float(),
-        mode=mode,
-        padding_mode='zeros',
-        align_corners=align_corners)  # [N * n_planes, C, 1, R * K]
+    if return_eikonal:
+        output_features = grid_sample_customized(
+            plane_features,
+            projected_coordinates.float())  # [N * n_planes, C, 1, R * K]
+    else:
+        output_features = F.grid_sample(
+            plane_features,
+            projected_coordinates.float(),
+            mode=mode,
+            padding_mode='zeros',
+            align_corners=align_corners)  # [N * n_planes, C, 1, R * K]
     output_features = output_features.permute(
         0, 3, 2, 1)  # [N * n_planes, R * K, 1, C]
     output_features = output_features.reshape(N, n_planes, M,
