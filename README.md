@@ -7,9 +7,9 @@ facilitating algorithm development. Note that the discriminator is omitted for s
 
 > **Benchmarking and Analyzing 3D-aware Image Synthesis with a Modularized Codebase** <br>
 > Qiuyu Wang, Zifan Shi, Kecheng Zheng, Yinghao Xu, Sida Peng, Yujun Shen <br>
-> *arXiv: 2306.12423* <br>
+> *arXiv preprint arXiv:2306.12423* <br>
 
-[[Paper](https://arxiv.org/abs/2306.12423)]
+[[Paper](https://arxiv.org/pdf/2306.12423.pdf)]
 
 ## Overview of methods supported by our codebase:
 
@@ -139,12 +139,15 @@ with open(file_name, 'r') as f:
 ```
 
 ## Inference for visualization
+
 After training a model, one can employ the following scripts to run inference and visualize the results, including images, videos, and geometries.
+
 ```shell
 CUDA_VISIBLE_DEVICES=0 python test_3d_inference.py --model <PATH_TO_MODEL> --work_dir <PATH_TO_WORK_DIR> --save_image true --save_video false --save_shape true --shape_res 512 --num 10 --truncation_psi 0.7
 ```
 
 ## Evaluate metrics
+
 After training a model, one can use the following scripts to evaluate various metrics, including FID, face identity consistency (ID), depth error (DE), pose error (PE) and reprojection error (RE).
 
 ```shell
@@ -152,13 +155,13 @@ python -m torch.distributed.launch --nproc_per_node=1 test_3d_metrics.py --datas
 ```
 
 ## TODO
+
 - [ ] Upload pretrained checkpoints
 - [ ] User Guide
 
 ## Acknowledgement
 
-This repository is built upon [Hammer](https://github.com/bytedance/Hammer). On top of [Hammer](https://github.com/bytedance/Hammer), we reimplement [GRAF](https://github.com/autonomousvision/graf), [GIRAFFE](https://github.com/autonomousvision/giraffe), [π-GAN](https://github.com/marcoamonteiro/pi-GAN), [StyleSDF](https://github.com/royorel/StyleSDF), [StyleNeRF](https://github.com/facebookresearch/StyleNeRF), [VolumeGAN](https://github.com/genforce/volumegan), [GRAM](https://github.com/microsoft/GRAM), [EpiGRAF](https://github.com/universome/epigraf) and [EG3D](https://github.com/NVlabs/eg3d).
-
+This repository is built upon [Hammer](https://github.com/bytedance/Hammer), on top of which we reimplement [GRAF](https://github.com/autonomousvision/graf), [GIRAFFE](https://github.com/autonomousvision/giraffe), [π-GAN](https://github.com/marcoamonteiro/pi-GAN), [StyleSDF](https://github.com/royorel/StyleSDF), [StyleNeRF](https://github.com/facebookresearch/StyleNeRF), [VolumeGAN](https://github.com/genforce/volumegan), [GRAM](https://github.com/microsoft/GRAM), [EpiGRAF](https://github.com/universome/epigraf) and [EG3D](https://github.com/NVlabs/eg3d).
 
 ## BibTeX
 
@@ -166,7 +169,7 @@ This repository is built upon [Hammer](https://github.com/bytedance/Hammer). On 
 @article{wang2023benchmarking,
   title   = {Benchmarking and Analyzing 3D-aware Image Synthesis with a Modularized Codebase},
   author  = {Wang, Qiuyu and Shi, Zifan and Zheng, Kecheng and Xu, Yinghao and Peng, Sida and Shen, Yujun},
-  journal = {arXiv:2306.12423},
+  journal = {arXiv preprint arXiv:2306.12423},
   year    = {2023}
 }
 ```
