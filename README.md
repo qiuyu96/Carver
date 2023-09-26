@@ -7,7 +7,7 @@ facilitating algorithm development. Note that the discriminator is omitted for s
 
 > **Benchmarking and Analyzing 3D-aware Image Synthesis with a Modularized Codebase** <br>
 > Qiuyu Wang, Zifan Shi, Kecheng Zheng, Yinghao Xu, Sida Peng, Yujun Shen <br>
-> *arXiv preprint arXiv:2306.12423* <br>
+> **NeurIPS 2023 Datasets and Benchmarks Track** <br>
 
 [[Paper](https://arxiv.org/pdf/2306.12423.pdf)]
 
