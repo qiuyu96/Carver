@@ -6,7 +6,7 @@ generation process in a universal way. Each module can be improved independently
 facilitating algorithm development. Note that the discriminator is omitted for simplicity.
 
 > **Benchmarking and Analyzing 3D-aware Image Synthesis with a Modularized Codebase** <br>
-> Qiuyu Wang, Zifan Shi, Kecheng Zheng, Yinghao Xu, Sida Peng, Yujun Shen <br>
+> [Qiuyu Wang](https://github.com/qiuyu96), [Zifan Shi](https://vivianszf.github.io/), [Kecheng Zheng](https://zkcys001.github.io/), [Yinghao Xu](https://justimyhxu.github.io/), [Sida Peng](https://pengsida.net/), [Yujun Shen](https://shenyujun.github.io/) <br>
 > **NeurIPS 2023 Datasets and Benchmarks Track** <br>
 
 [[Paper](https://arxiv.org/pdf/2306.12423.pdf)]
